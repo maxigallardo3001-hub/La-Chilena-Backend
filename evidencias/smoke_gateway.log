@@ -1,0 +1,43 @@
+﻿PASS health del gateway: 200
+PASS ruta inexistente: 404
+PASS ruta interna no publicada: 404
+PASS verbo no permitido: 405
+PASS sin sesión en ruta protegida: 401
+PASS sin sesión en pedidos: 401
+PASS aviso de pago sin firma: 401
+PASS aviso de pago con firma pero fuera de plazo: 401
+PASS catálogo anónimo llega al destino y, sin inventory, responde 502
+PASS cabeceras de seguridad presentes
+PASS cuenta de prueba creada en auth
+PASS origen no permitido: 403
+PASS cuerpo que no es JSON: 400
+PASS cuerpo demasiado grande: 413
+PASS login con clave mala: 401
+PASS login correcto: 200
+PASS la cookie es HttpOnly, Secure, SameSite=Strict y con prefijo __Host-
+PASS el cuerpo del login no trae el token de sesión
+PASS GET /auth/session: 200 con el usuario
+PASS el token CSRF de la sesión coincide con el del login
+PASS POST sin token CSRF: 403
+PASS POST con token CSRF falso: 403
+PASS con CSRF válido llega al destino (400 validación o 502 si orders está apagado)
+PASS cliente en ruta de administración: 403
+PASS cliente listando usuarios: 403
+PASS cliente confirmando un pago: 403
+PASS cambio de clave con la actual incorrecta: 400
+PASS cambio de clave sin CSRF: 403
+PASS cambio de clave: 204
+PASS logout sin CSRF: 403
+PASS logout: 204 y cookie expirada
+PASS tras el logout la sesión no existe: 401
+PASS cookie inventada: 401
+PASS con clave temporal solo se permite cambiarla: 403
+PASS el administrador cambia su clave temporal: 204
+PASS administrador lista usuarios: 200
+PASS administrador crea un usuario: 201
+PASS administrador da de baja al usuario: 204
+PASS administrador en ruta de despacho: 403
+PASS se restaura la clave original: 204
+PASS el límite de ingreso responde 429 con Retry-After
+
+Todas las comprobaciones pasaron

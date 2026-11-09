@@ -1,0 +1,18 @@
+{
+  "name": "la-chilena-graphql-gateway",
+  "version": "1.0.0",
+  "private": true,
+  "description": "GraphQL Gateway privado de La Chilena (agregación de lectura)",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "test": "node --test"
+  },
+  "license": "ISC",
+  "dependencies": {
+    "apollo-server-express": "3.13.0",
+    "dataloader": "2.2.2",
+    "express": "4.22.3",
+    "graphql": "15.10.1"
+  }
+}

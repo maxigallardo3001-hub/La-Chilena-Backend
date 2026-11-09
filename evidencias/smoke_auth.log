@@ -1,0 +1,37 @@
+﻿PASS health responde 200
+PASS login sin credencial de servicio: 403
+PASS login con credencial incorrecta: 403
+PASS la credencial de clients no sirve en /login: 403
+PASS crear cuenta interna: 201
+PASS crear cuenta con la credencial del gateway: 403
+PASS correo repetido: 409
+PASS login con clave mala: 401
+PASS el error no incluye detalles internos
+PASS login correcto: 200
+PASS la respuesta no trae el hash
+PASS rol cliente y sin cambio obligatorio
+PASS introspección activa con CSRF válido
+PASS introspección con CSRF falso: csrfValid=false
+PASS token desconocido: active=false
+PASS clave nueva corta: 400
+PASS clave nueva igual a la actual: 400
+PASS clave actual incorrecta: 400
+PASS cambio de clave: 204
+PASS la clave anterior ya no sirve: 401
+PASS la clave nueva sirve: 200
+PASS logout: 204
+PASS la sesión cerrada queda inactiva
+PASS tras 5 intentos fallidos responde 429
+PASS con la clave correcta sigue bloqueado: 429
+PASS listar usuarios sin identidad: 401
+PASS listar usuarios con rol cajero: 403
+PASS listar usuarios como administrador: 200
+PASS crear usuario: 201
+PASS crear usuario con rol inválido: 400
+PASS crear usuario con correo repetido: 409
+PASS la respuesta no incluye credenciales
+PASS un administrador no puede darse de baja a sí mismo: 409
+PASS dar de baja a otro administrador: 204
+PASS dar de baja un usuario: 204
+
+Todas las comprobaciones pasaron

@@ -1,0 +1,134 @@
+﻿== Preparación
+Cuentas creadas por la API real; claves temporales leídas de Mailpit
+== V1 y V10: catálogo, promociones y precios finales
+PASS V1 catálogo anónimo: 200 con productos
+PASS el visitante ve la oferta para todos (queso 15 %: 1870)
+PASS el visitante no ve la promoción exclusiva (carne 3500)
+PASS el cliente con sesión ve la promoción exclusiva (carne 3150)
+PASS filtro onOffer devuelve solo productos con promoción
+PASS filtro de categoría inválido: 400
+== Administración de productos y promociones (S11 a S14, S25 a S28)
+PASS administrador crea producto: 201
+PASS nombre repetido: 409
+PASS dueño también administra productos: 200
+PASS V3 cliente intenta administrar productos: 403
+PASS S30 modificar producto: 200 con los datos nuevos
+PASS S30 modificar con nombre de otro producto: 409
+PASS S30 cliente no modifica productos: 403
+PASS S30 precio no positivo: 400
+PASS cambiar disponibilidad: 200
+PASS crear promoción: 201
+PASS promoción solapada del mismo producto: 409
+PASS fechas invertidas: 400
+PASS desactivar promoción: 200
+PASS con la primera inactiva se puede crear otra promoción: 201
+PASS reactivar una promoción que se solapa: 409
+PASS eliminar promoción: 204
+PASS eliminar producto: 204
+== Pedidos (S15 a S19)
+PASS crear pedido: 201 pendiente_pago
+PASS el total lo calcula el servidor: 6800
+PASS misma Idempotency-Key devuelve el mismo pedido
+PASS sin Idempotency-Key: 400
+PASS V6 precio, total y estado manipulados se ignoran
+PASS producto no disponible: 409 con la lista
+PASS V13 comuna sin reparto: 422 con comunas habilitadas
+PASS S16 lista los pedidos propios
+PASS V4 cliente B consulta el pedido de A: 403
+PASS V4 el pedido ajeno no aparece en la lista de B
+PASS el propietario ve su pedido con dirección
+PASS administrador ve cualquier pedido
+PASS cajero lista pedidos por pagar
+PASS cajero no ve pedidos en otro estado: 403
+PASS dueño no consulta pedidos individuales: 403
+== Pago por depósito y boleta (S20, S22)
+PASS el cliente no puede confirmar un pago: 403
+PASS V7 el cajero confirma e ignora campos extra: 200 pagado con boleta
+PASS repetir la confirmación es idempotente
+PASS otra referencia sobre un pago confirmado: 409
+PASS el pedido quedó pagado
+PASS el propietario ve la boleta con neto + IVA = total
+PASS otro cliente no ve la boleta: 403
+PASS la boleta llega por correo
+PASS una referencia ya usada en otro pago: 409
+== Pago con Servipag y aviso del proveedor (S21)
+PASS el cobro de Servipag trae un código
+PASS el total usa la promoción exclusiva: 2 x 3150
+PASS confirmar antes del aviso: 422
+PASS V8 aviso con firma inválida: 401
+PASS aviso con marca de tiempo vencida: 401
+PASS aviso con monto distinto: 409
+PASS aviso aprobado y firmado: 200
+PASS V9 el mismo aviso otra vez: 200 sin reprocesar
+PASS el aviso no cambia el estado del pedido
+PASS con el aviso registrado el cajero confirma: 200
+== Despacho (S19, S23)
+PASS despacho ve el pedido pagado con dirección
+PASS el cajero no avanza estados: 403
+PASS salto de estado de pagado a entregado: 409
+PASS despacho avanza a en_preparacion
+PASS despacho avanza a despachado
+PASS despacho avanza a entregado
+PASS un pedido entregado no puede anularse: 409
+== Anulación (S18)
+PASS el cliente anula su pedido: 200
+PASS anular dos veces: 409
+PASS cliente B no anula pedidos ajenos: 403
+PASS pagar un pedido ya anulado: 409 con el cobro anulado
+PASS aviso aprobado de un cobro anulado se recibe sin pagar el pedido
+PASS el historial conserva la anulación
+PASS el cliente no anula un pedido en preparación: 409
+PASS el administrador sí lo anula (CU7): 200
+== Reporte de ventas (S24)
+PASS administrador consulta el reporte: 200 con indicadores
+PASS el reporte no incluye direcciones ni RUN
+PASS el dueño consulta el reporte: 200
+PASS el cajero no consulta el reporte: 403
+PASS rango mayor a 366 días: 400
+== Clientes y usuarios (S04 a S09)
+PASS administrador lista clientes: 200 sin datos de nacimiento
+PASS cliente no lista clientes: 403
+PASS RUN inválido: 400
+PASS correo sin verificar: 422
+PASS correo inexistente según el validador: no se puede verificar
+PASS S32 el cliente consulta su ficha: 200 sin fecha de nacimiento ni sexo
+PASS S32 cliente B no consulta la ficha de A: 403
+PASS S33 el cliente modifica su dirección: 200
+PASS S33 el nombre nuevo se refleja en la sesión
+PASS S33 cliente B no modifica la ficha de A: 403
+PASS S33 teléfono inválido: 400
+PASS S33 no permite cambiar RUN ni correo (campos ignorados)
+PASS S32 el administrador consulta y modifica la ficha: 200
+PASS el pedido ya creado conserva su dirección original
+PASS S31 el administrador cambia el perfil de un usuario: 200
+PASS S31 el cambio de perfil cierra las sesiones del usuario: 401
+PASS S31 el administrador no puede quitarse su propio perfil: 409
+PASS S31 un no administrador no edita usuarios: 403
+PASS S31 reactivar una cuenta con PUT: 200
+PASS V12 S06 y S17 no devuelven fecha de nacimiento, sexo ni contraseña
+== GraphQL: agregación desde orders, inventory y payments (G1 a G10)
+PASS misPedidos combina orders e inventory
+PASS G1 sin sesión: 401
+PASS sin token CSRF: 403
+PASS G2 el GraphQL Gateway no responde sin credencial de servicio: 403
+PASS resumenPedido combina orders y payments
+PASS G3 pedido ajeno: FORBIDDEN y sin datos
+PASS G4 pedir clientId: el campo no existe
+PASS G4 pedir la referencia de pago: el campo no existe
+PASS G6 consulta de costo superior al máximo: QUERY_TOO_COSTLY
+PASS G6 primeros fuera de rango: BAD_USER_INPUT
+PASS consulta sin operationName: rechazada
+PASS consulta de más de 4 KB: 413
+PASS G9 despacho no ve un pedido en pendiente_pago: FORBIDDEN
+PASS G10 el cajero pide la dirección: FORBIDDEN con el campo en null
+== V5: acceso directo a los servicios internos (desde la red privada)
+PASS orders: sin credencial de servicio 403 y con una incorrecta 403
+PASS inventory: sin credencial de servicio 403 y con una incorrecta 403
+PASS clients: sin credencial de servicio 403 y con una incorrecta 403
+PASS payments: sin credencial de servicio 403 y con una incorrecta 403
+PASS auth: sin credencial de servicio 403 y con una incorrecta 403
+PASS V16 la credencial del GraphQL Gateway lee pedidos pero no puede crearlos (solo lectura)
+PASS V16 la credencial del GraphQL Gateway no lee boletas directamente
+PASS cabeceras de identidad enviadas por el navegador se descartan
+
+Todas las comprobaciones pasaron

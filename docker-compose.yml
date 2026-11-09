@@ -1,0 +1,456 @@
+name: la-chilena-backend
+
+x-service-env: &service-env
+  VAULT_ADDR: https://vault:8201
+  VAULT_TOKEN_FILE: /run/vault/token
+  INTERNAL_TLS: "true"
+  CA_FILE: /certs/ca.crt
+  LOG_LEVEL: INFO
+  SEED_DEMO_DATA: "true"
+
+networks:
+  private:
+    internal: true
+  public: {}
+
+volumes:
+  pki: {}
+  mongo-data: {}
+  vtok-auth: {}
+  vtok-gateway: {}
+  vtok-clients: {}
+  vtok-inventory: {}
+  vtok-orders: {}
+  vtok-payments: {}
+  vtok-notifications: {}
+  vtok-graphql: {}
+  vtok-mailcheck-sim: {}
+  vtok-servipag-sim: {}
+
+services:
+  certs:
+    image: alpine/openssl@sha256:96e53bf9b9041fdc8a33ea61356688506bbddc368c70d6e8a9acdd28475e8537
+    entrypoint: ["/bin/sh", "/gen-certs.sh"]
+    environment:
+      SERVICES: "vault auth gateway clients inventory orders payments notifications graphql servipag-sim mailcheck-sim"
+    volumes:
+      - ./infra/certs/gen-certs.sh:/gen-certs.sh:ro
+      - pki:/certs
+    restart: "no"
+
+  vault:
+    image: hashicorp/vault:1.17
+    cap_add: [IPC_LOCK]
+    environment:
+      VAULT_DEV_ROOT_TOKEN_ID: ${VAULT_DEV_ROOT_TOKEN}
+      VAULT_DEV_LISTEN_ADDRESS: 127.0.0.1:8200
+      VAULT_ADDR: http://127.0.0.1:8200
+      VAULT_LOCAL_CONFIG: '{"listener": [{"tcp": {"address": "0.0.0.0:8201", "tls_cert_file": "/certs/vault.crt", "tls_key_file": "/certs/vault.key"}}]}'
+    volumes:
+      - pki:/certs:ro
+    depends_on:
+      certs:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ["CMD", "vault", "status"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    networks: [private]
+
+  vault-init:
+    image: hashicorp/vault:1.17
+    entrypoint: ["/bin/sh", "/init.sh"]
+    env_file: .env
+    environment:
+      VAULT_ADDR: https://vault:8201
+      VAULT_CACERT: /certs/ca.crt
+    volumes:
+      - ./infra/vault/init.sh:/init.sh:ro
+      - pki:/certs:ro
+      - vtok-auth:/tokens/auth
+      - vtok-gateway:/tokens/gateway
+      - vtok-clients:/tokens/clients
+      - vtok-inventory:/tokens/inventory
+      - vtok-orders:/tokens/orders
+      - vtok-payments:/tokens/payments
+      - vtok-notifications:/tokens/notifications
+      - vtok-graphql:/tokens/graphql
+      - vtok-mailcheck-sim:/tokens/mailcheck-sim
+      - vtok-servipag-sim:/tokens/servipag-sim
+    depends_on:
+      vault:
+        condition: service_healthy
+    networks: [private]
+    restart: "no"
+
+  mongo:
+    image: mongo:7
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USER}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD}
+      DB_PASS_AUTH: ${DB_PASS_AUTH}
+      DB_PASS_CLIENTS: ${DB_PASS_CLIENTS}
+      DB_PASS_INVENTORY: ${DB_PASS_INVENTORY}
+      DB_PASS_ORDERS: ${DB_PASS_ORDERS}
+      DB_PASS_PAYMENTS: ${DB_PASS_PAYMENTS}
+    volumes:
+      - mongo-data:/data/db
+      - ./infra/mongo/init-users.js:/docker-entrypoint-initdb.d/init-users.js:ro
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand({ping: 1}).ok"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    networks: [private]
+
+  auth:
+    build:
+      context: .
+      dockerfile: docker/python.Dockerfile
+      args:
+        SERVICE: auth
+    environment:
+      <<: *service-env
+      SERVICE_NAME: auth
+      PORT: "8100"
+      VAULT_SECRET_PATH: auth
+      NOTIFICATIONS_URL: https://notifications:8600
+    volumes:
+      - pki:/certs:ro
+      - vtok-auth:/run/vault:ro
+    depends_on:
+      certs:
+        condition: service_completed_successfully
+      vault-init:
+        condition: service_completed_successfully
+      mongo:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-m", "lachilena_common.healthcheck"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    networks: [private]
+
+  inventory:
+    build:
+      context: .
+      dockerfile: docker/python.Dockerfile
+      args:
+        SERVICE: inventory
+    environment:
+      <<: *service-env
+      SERVICE_NAME: inventory
+      PORT: "8300"
+      VAULT_SECRET_PATH: inventory
+    volumes:
+      - pki:/certs:ro
+      - vtok-inventory:/run/vault:ro
+    depends_on:
+      certs:
+        condition: service_completed_successfully
+      vault-init:
+        condition: service_completed_successfully
+      mongo:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-m", "lachilena_common.healthcheck"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    networks: [private]
+
+  mailcheck-sim:
+    build:
+      context: .
+      dockerfile: docker/python.Dockerfile
+      args:
+        SERVICE: mailcheck-sim
+    environment:
+      <<: *service-env
+      SERVICE_NAME: mailcheck-sim
+      PORT: "8900"
+      VAULT_SECRET_PATH: mailcheck-sim
+    volumes:
+      - pki:/certs:ro
+      - vtok-mailcheck-sim:/run/vault:ro
+    depends_on:
+      certs:
+        condition: service_completed_successfully
+      vault-init:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ["CMD", "python", "-m", "lachilena_common.healthcheck"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    networks: [private]
+
+  clients:
+    build:
+      context: .
+      dockerfile: docker/python.Dockerfile
+      args:
+        SERVICE: clients
+    environment:
+      <<: *service-env
+      SERVICE_NAME: clients
+      PORT: "8200"
+      VAULT_SECRET_PATH: clients
+      AUTH_URL: https://auth:8100
+      MAILCHECK_URL: https://mailcheck-sim:8900
+    volumes:
+      - pki:/certs:ro
+      - vtok-clients:/run/vault:ro
+    depends_on:
+      certs:
+        condition: service_completed_successfully
+      vault-init:
+        condition: service_completed_successfully
+      mongo:
+        condition: service_healthy
+      auth:
+        condition: service_healthy
+      mailcheck-sim:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-m", "lachilena_common.healthcheck"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    networks: [private]
+
+  notifications:
+    build:
+      context: .
+      dockerfile: docker/python.Dockerfile
+      args:
+        SERVICE: notifications
+    environment:
+      <<: *service-env
+      SERVICE_NAME: notifications
+      PORT: "8600"
+      VAULT_SECRET_PATH: notifications
+      SMTP_HOST: mailpit
+      SMTP_PORT: "1025"
+    volumes:
+      - pki:/certs:ro
+      - vtok-notifications:/run/vault:ro
+    depends_on:
+      certs:
+        condition: service_completed_successfully
+      vault-init:
+        condition: service_completed_successfully
+      mailpit:
+        condition: service_started
+    healthcheck:
+      test: ["CMD", "python", "-m", "lachilena_common.healthcheck"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    networks: [private]
+
+  servipag-sim:
+    build:
+      context: .
+      dockerfile: docker/python.Dockerfile
+      args:
+        SERVICE: servipag-sim
+    environment:
+      <<: *service-env
+      SERVICE_NAME: servipag-sim
+      PORT: "8800"
+      VAULT_SECRET_PATH: servipag-sim
+      GATEWAY_URL: https://gateway:8443
+    volumes:
+      - pki:/certs:ro
+      - vtok-servipag-sim:/run/vault:ro
+    depends_on:
+      certs:
+        condition: service_completed_successfully
+      vault-init:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ["CMD", "python", "-m", "lachilena_common.healthcheck"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    networks: [private]
+
+  orders:
+    build:
+      context: .
+      dockerfile: docker/python.Dockerfile
+      args:
+        SERVICE: orders
+    environment:
+      <<: *service-env
+      SERVICE_NAME: orders
+      PORT: "8400"
+      VAULT_SECRET_PATH: orders
+      INVENTORY_URL: https://inventory:8300
+      CLIENTS_URL: https://clients:8200
+      PAYMENTS_URL: https://payments:8500
+      DELIVERY_COMUNAS: ${DELIVERY_COMUNAS:-Maipú,Santiago}
+    volumes:
+      - pki:/certs:ro
+      - vtok-orders:/run/vault:ro
+    depends_on:
+      certs:
+        condition: service_completed_successfully
+      vault-init:
+        condition: service_completed_successfully
+      mongo:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-m", "lachilena_common.healthcheck"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    networks: [private]
+
+  payments:
+    build:
+      context: .
+      dockerfile: docker/python.Dockerfile
+      args:
+        SERVICE: payments
+    environment:
+      <<: *service-env
+      SERVICE_NAME: payments
+      PORT: "8500"
+      VAULT_SECRET_PATH: payments
+      ORDERS_URL: https://orders:8400
+      NOTIFICATIONS_URL: https://notifications:8600
+      SERVIPAG_URL: https://servipag-sim:8800
+      RECONCILE_INTERVAL: "30"
+    volumes:
+      - pki:/certs:ro
+      - vtok-payments:/run/vault:ro
+    depends_on:
+      certs:
+        condition: service_completed_successfully
+      vault-init:
+        condition: service_completed_successfully
+      mongo:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-m", "lachilena_common.healthcheck"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    networks: [private]
+
+  mailpit:
+    image: axllent/mailpit:v1.20
+    environment:
+      MP_SMTP_AUTH_ACCEPT_ANY: "1"
+      MP_SMTP_AUTH_ALLOW_INSECURE: "1"
+    ports:
+      - "127.0.0.1:8025:8025"
+    networks: [private, public]
+
+  graphql:
+    build:
+      context: .
+      dockerfile: docker/graphql.Dockerfile
+    environment:
+      NODE_ENV: production
+      PORT: "8700"
+      VAULT_ADDR: https://vault:8201
+      VAULT_TOKEN_FILE: /run/vault/token
+      CA_FILE: /certs/ca.crt
+      ORDERS_URL: https://orders:8400
+      INVENTORY_URL: https://inventory:8300
+      PAYMENTS_URL: https://payments:8500
+    volumes:
+      - pki:/certs:ro
+      - vtok-graphql:/run/vault:ro
+    depends_on:
+      certs:
+        condition: service_completed_successfully
+      vault-init:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ["CMD", "node", "src/healthcheck.js"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    networks: [private]
+
+  gateway:
+    build:
+      context: .
+      dockerfile: docker/python.Dockerfile
+      args:
+        SERVICE: gateway
+    environment:
+      <<: *service-env
+      SERVICE_NAME: gateway
+      PORT: "8443"
+      VAULT_SECRET_PATH: gateway
+      AUTH_URL: https://auth:8100
+      CLIENTS_URL: https://clients:8200
+      INVENTORY_URL: https://inventory:8300
+      ORDERS_URL: https://orders:8400
+      PAYMENTS_URL: https://payments:8500
+      GRAPHQL_URL: https://graphql:8700
+      ALLOWED_ORIGINS: https://localhost:8443
+      RATE_LIMIT_MULTIPLIER: "${RATE_LIMIT_MULTIPLIER:-1}"
+    ports:
+      - "8443:8443"
+    volumes:
+      - pki:/certs:ro
+      - vtok-gateway:/run/vault:ro
+    depends_on:
+      certs:
+        condition: service_completed_successfully
+      vault-init:
+        condition: service_completed_successfully
+      auth:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-m", "lachilena_common.healthcheck"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    networks: [private, public]
+
+  tests:
+    profiles: ["tests"]
+    build:
+      context: .
+      dockerfile: docker/tests.Dockerfile
+    env_file: .env
+    environment:
+      CA_FILE: /certs/ca.crt
+      AUTH_URL: https://auth:8100
+      GATEWAY_URL: https://gateway:8443
+      SIM_URL: https://servipag-sim:8800
+      MAILPIT_URL: http://mailpit:8025
+    volumes:
+      - pki:/certs:ro
+      - ./evidencias:/evidencias
+    depends_on:
+      gateway:
+        condition: service_healthy
+      auth:
+        condition: service_healthy
+      clients:
+        condition: service_healthy
+      inventory:
+        condition: service_healthy
+      orders:
+        condition: service_healthy
+      payments:
+        condition: service_healthy
+      notifications:
+        condition: service_healthy
+      graphql:
+        condition: service_healthy
+      servipag-sim:
+        condition: service_healthy
+      mailcheck-sim:
+        condition: service_healthy
+    networks: [private]

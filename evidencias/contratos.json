@@ -1,0 +1,840 @@
+[
+  {
+    "id": "S01",
+    "method": "POST",
+    "path": "/api/v1/auth/login",
+    "params": null,
+    "headers": {},
+    "request": {
+      "email": "ana.perez-789bcd@example.cl",
+      "password": "Cliente#2026ok"
+    },
+    "status": 200,
+    "response": {
+      "user": {
+        "id": "c47432c5-3177-4b44-a770-13103e5121a9",
+        "name": "Ana Pérez Soto",
+        "role": "cliente"
+      },
+      "mustChangePassword": false,
+      "csrfToken": "186b7559ca1f…",
+      "expiresIn": 900
+    }
+  },
+  {
+    "id": "S02",
+    "method": "POST",
+    "path": "/api/v1/auth/logout",
+    "params": null,
+    "headers": {},
+    "request": null,
+    "status": 204,
+    "response": null
+  },
+  {
+    "id": "S03",
+    "method": "GET",
+    "path": "/api/v1/auth/session",
+    "params": null,
+    "headers": {},
+    "request": null,
+    "status": 200,
+    "response": {
+      "user": {
+        "id": "c47432c5-3177-4b44-a770-13103e5121a9",
+        "name": "Ana Pérez Soto",
+        "role": "cliente"
+      },
+      "mustChangePassword": false,
+      "csrfToken": "186b7559ca1f…",
+      "expiresAt": "2026-11-09T04:01:52Z"
+    }
+  },
+  {
+    "id": "S04",
+    "method": "POST",
+    "path": "/api/v1/clients",
+    "params": null,
+    "headers": {},
+    "request": {
+      "run": "17.041.365-2",
+      "name": "Ana Pérez Soto",
+      "address": "Av. Pajaritos 1200",
+      "comuna": "Maipú",
+      "provincia": "Santiago",
+      "region": "Metropolitana",
+      "birthDate": "1994-03-21",
+      "sex": "F",
+      "email": "ana.perez-789bcd@example.cl",
+      "phone": "+56987654321",
+      "password": "Cliente#2026ok",
+      "verificationId": "v-8b6eea8751354291"
+    },
+    "status": 201,
+    "response": {
+      "id": "c47432c5-3177-4b44-a770-13103e5121a9",
+      "name": "Ana Pérez Soto",
+      "email": "ana.perez-789bcd@example.cl"
+    }
+  },
+  {
+    "id": "S05",
+    "method": "POST",
+    "path": "/api/v1/clients/email-verifications",
+    "params": null,
+    "headers": {},
+    "request": {
+      "email": "ana.perez-789bcd@example.cl"
+    },
+    "status": 200,
+    "response": {
+      "verificationId": "v-8b6eea8751354291",
+      "valid": true
+    }
+  },
+  {
+    "id": "S06",
+    "method": "GET",
+    "path": "/api/v1/clients",
+    "params": {
+      "q": "ana.perez",
+      "size": "2"
+    },
+    "headers": {},
+    "request": null,
+    "status": 200,
+    "response": {
+      "items": [
+        {
+          "id": "c47432c5-3177-4b44-a770-13103e5121a9",
+          "run": "17.041.365-2",
+          "name": "Ana Pérez Soto",
+          "email": "ana.perez-789bcd@example.cl",
+          "comuna": "Maipú",
+          "phone": "+56987654321"
+        }
+      ],
+      "page": 1,
+      "size": 2,
+      "total": 1
+    }
+  },
+  {
+    "id": "S07",
+    "method": "GET",
+    "path": "/api/v1/users",
+    "params": null,
+    "headers": {},
+    "request": null,
+    "status": 200,
+    "response": [
+      {
+        "id": "5bc57f36-9837-48be-bdb9-4981caedbd57",
+        "name": "Admin Prueba",
+        "email": "admin-157dce92@example.cl",
+        "role": "administrador",
+        "active": false
+      },
+      {
+        "id": "c8489123-a2cd-4446-b9fb-3f5eac6c8125",
+        "name": "Administrador",
+        "email": "admin@lachilena.local",
+        "role": "administrador",
+        "active": true
+      }
+    ]
+  },
+  {
+    "id": "S08",
+    "method": "POST",
+    "path": "/api/v1/users",
+    "params": null,
+    "headers": {},
+    "request": {
+      "name": "Rosa Tapia",
+      "email": "rosa-f10a89@lachilena.cl",
+      "role": "despacho"
+    },
+    "status": 201,
+    "response": {
+      "id": "62f90491-37e2-4586-80d8-1899c4e1e9a6",
+      "name": "Rosa Tapia",
+      "email": "rosa-f10a89@lachilena.cl",
+      "role": "despacho",
+      "active": true
+    }
+  },
+  {
+    "id": "S09",
+    "method": "DELETE",
+    "path": "/api/v1/users/62f90491-37e2-4586-80d8-1899c4e1e9a6",
+    "params": null,
+    "headers": {},
+    "request": null,
+    "status": 204,
+    "response": null
+  },
+  {
+    "id": "S10",
+    "method": "GET",
+    "path": "/api/v1/products",
+    "params": {
+      "category": "horno"
+    },
+    "headers": {},
+    "request": null,
+    "status": 200,
+    "response": {
+      "items": [
+        {
+          "id": "p-0001",
+          "name": "Empanada de pino",
+          "category": "horno",
+          "price": 2500,
+          "finalPrice": 2500,
+          "promotion": null,
+          "description": "Carne molida, cebolla, huevo duro, aceituna y pasas. La clásica chilena.",
+          "available": true
+        },
+        {
+          "id": "p-0002",
+          "name": "Empanada de queso",
+          "category": "horno",
+          "price": 2200,
+          "finalPrice": 1870,
+          "promotion": {
+            "id": "pr-0002",
+            "name": "15% en empanadas de queso",
+            "discountPercent": 15
+          },
+          "description": "Queso gauda derretido, horneada hasta dorar.",
+          "available": true
+        }
+      ]
+    }
+  },
+  {
+    "id": "S11",
+    "method": "GET",
+    "path": "/api/v1/admin/products",
+    "params": {
+      "q": "pino"
+    },
+    "headers": {},
+    "request": null,
+    "status": 200,
+    "response": {
+      "items": [
+        {
+          "id": "p-0001",
+          "name": "Empanada de pino",
+          "category": "horno",
+          "price": 2500,
+          "description": "Carne molida, cebolla, huevo duro, aceituna y pasas. La clásica chilena.",
+          "available": true,
+          "updatedAt": "2026-11-09T03:43:55Z"
+        }
+      ]
+    }
+  },
+  {
+    "id": "S12",
+    "method": "POST",
+    "path": "/api/v1/admin/products",
+    "params": null,
+    "headers": {},
+    "request": {
+      "name": "Empanada de pollo 2151",
+      "category": "horno",
+      "price": 2600,
+      "description": "Pollo, pimentón y cebolla."
+    },
+    "status": 201,
+    "response": {
+      "id": "p-976feb7139",
+      "name": "Empanada de pollo 2151",
+      "category": "horno",
+      "price": 2600,
+      "description": "Pollo, pimentón y cebolla.",
+      "available": true,
+      "updatedAt": "2026-11-09T03:47:06Z"
+    }
+  },
+  {
+    "id": "S13",
+    "method": "PUT",
+    "path": "/api/v1/admin/products/p-976feb7139/availability",
+    "params": null,
+    "headers": {},
+    "request": {
+      "available": false
+    },
+    "status": 200,
+    "response": {
+      "id": "p-976feb7139",
+      "available": false
+    }
+  },
+  {
+    "id": "S14",
+    "method": "DELETE",
+    "path": "/api/v1/admin/products/p-976feb7139",
+    "params": null,
+    "headers": {},
+    "request": null,
+    "status": 204,
+    "response": null
+  },
+  {
+    "id": "S15",
+    "method": "POST",
+    "path": "/api/v1/orders",
+    "params": null,
+    "headers": {
+      "Idempotency-Key": "21b6266f15f74d87868e626f562517ab"
+    },
+    "request": {
+      "items": [
+        {
+          "productId": "p-0001",
+          "quantity": 2
+        },
+        {
+          "productId": "p-0004",
+          "quantity": 1
+        }
+      ],
+      "paymentMethod": "deposito"
+    },
+    "status": 201,
+    "response": {
+      "id": "ORD-2026-1109-0008",
+      "status": "pendiente_pago",
+      "items": [
+        {
+          "productId": "p-0001",
+          "name": "Empanada de pino",
+          "unitPrice": 2500,
+          "quantity": 2
+        },
+        {
+          "productId": "p-0004",
+          "name": "Empanada de carne",
+          "unitPrice": 3150,
+          "quantity": 1
+        }
+      ],
+      "total": 8150,
+      "payment": {
+        "method": "deposito",
+        "status": "pendiente",
+        "instructions": "Realiza el depósito de $8.150 y presenta el comprobante al cajero"
+      },
+      "createdAt": "2026-11-09T03:46:52.781Z"
+    }
+  },
+  {
+    "id": "S16",
+    "method": "GET",
+    "path": "/api/v1/orders/mine",
+    "params": {
+      "size": "2"
+    },
+    "headers": {},
+    "request": null,
+    "status": 200,
+    "response": {
+      "items": [
+        {
+          "id": "ORD-2026-1109-0008",
+          "createdAt": "2026-11-09T03:46:52.781Z",
+          "status": "pendiente_pago",
+          "itemsCount": 3,
+          "total": 8150,
+          "summary": "Empanada de pino x2, Empanada de carne x1",
+          "canCancel": true
+        }
+      ],
+      "nextCursor": null
+    }
+  },
+  {
+    "id": "S17",
+    "method": "GET",
+    "path": "/api/v1/orders/ORD-2026-1109-0008",
+    "params": null,
+    "headers": {},
+    "request": null,
+    "status": 200,
+    "response": {
+      "id": "ORD-2026-1109-0008",
+      "status": "pendiente_pago",
+      "items": [
+        {
+          "productId": "p-0001",
+          "name": "Empanada de pino",
+          "unitPrice": 2500,
+          "quantity": 2
+        },
+        {
+          "productId": "p-0004",
+          "name": "Empanada de carne",
+          "unitPrice": 3150,
+          "quantity": 1
+        }
+      ],
+      "total": 8150,
+      "paymentMethod": "deposito",
+      "createdAt": "2026-11-09T03:46:52.781Z",
+      "history": [
+        {
+          "status": "pendiente_pago",
+          "at": "2026-11-09T03:46:52.781Z"
+        }
+      ],
+      "deliveryAddress": "Av. 5 de Abril 450, Maipú"
+    }
+  },
+  {
+    "id": "S18",
+    "method": "POST",
+    "path": "/api/v1/orders/ORD-2026-1109-0009/cancellation",
+    "params": null,
+    "headers": {},
+    "request": {
+      "reason": "Solicitud del cliente"
+    },
+    "status": 200,
+    "response": {
+      "id": "ORD-2026-1109-0009",
+      "status": "anulado",
+      "cancelledAt": "2026-11-09T03:47:06.603Z",
+      "cancelledBy": "cliente"
+    }
+  },
+  {
+    "id": "S19",
+    "method": "GET",
+    "path": "/api/v1/orders",
+    "params": {
+      "status": "pendiente_pago",
+      "size": "2"
+    },
+    "headers": {},
+    "request": null,
+    "status": 200,
+    "response": {
+      "items": [
+        {
+          "id": "ORD-2026-0831",
+          "createdAt": "2026-08-31T20:47:00.000Z",
+          "status": "pendiente_pago",
+          "total": 6800,
+          "paymentMethod": "deposito",
+          "clientName": "Constanza Rivas",
+          "items": [
+            {
+              "name": "Empanada de pino",
+              "quantity": 2
+            },
+            {
+              "name": "Mote con huesillo",
+              "quantity": 1
+            }
+          ]
+        },
+        {
+          "id": "ORD-2026-1109-0002",
+          "createdAt": "2026-11-09T03:46:27.104Z",
+          "status": "pendiente_pago",
+          "total": 2500,
+          "paymentMethod": "deposito",
+          "clientName": "Cliente de Prueba",
+          "items": [
+            {
+              "name": "Empanada de pino",
+              "quantity": 1
+            }
+          ]
+        }
+      ],
+      "page": 1,
+      "size": 2,
+      "total": 4
+    }
+  },
+  {
+    "id": "S20",
+    "method": "POST",
+    "path": "/api/v1/payments/ORD-2026-1109-0008/confirmation",
+    "params": null,
+    "headers": {},
+    "request": {
+      "reference": "DEP-2026-89B336"
+    },
+    "status": 200,
+    "response": {
+      "orderId": "ORD-2026-1109-0008",
+      "status": "pagado",
+      "paidAt": "2026-11-09T03:47:06.443Z",
+      "receiptId": "BOL-000005"
+    }
+  },
+  {
+    "id": "S21",
+    "method": "POST",
+    "path": "/api/v1/payments/webhooks/servipag",
+    "params": null,
+    "headers": {
+      "X-Signature": "<HMAC-SHA256 hex>",
+      "X-Timestamp": "<epoch s>"
+    },
+    "request": {
+      "eventId": "evt-32aaa850913a",
+      "orderRef": "ORD-2026-1109-0009",
+      "amount": 5610,
+      "status": "approved"
+    },
+    "status": 200,
+    "response": {
+      "received": true
+    }
+  },
+  {
+    "id": "S22",
+    "method": "GET",
+    "path": "/api/v1/orders/ORD-2026-1109-0008/receipt",
+    "params": null,
+    "headers": {},
+    "request": null,
+    "status": 200,
+    "response": {
+      "receiptId": "BOL-000005",
+      "orderId": "ORD-2026-1109-0008",
+      "issuedAt": "2026-11-09T03:47:06.458Z",
+      "items": [
+        {
+          "name": "Empanada de pino",
+          "quantity": 2,
+          "unitPrice": 2500
+        },
+        {
+          "name": "Empanada de carne",
+          "quantity": 1,
+          "unitPrice": 3150
+        }
+      ],
+      "net": 6849,
+      "iva": 1301,
+      "total": 8150
+    }
+  },
+  {
+    "id": "S23",
+    "method": "POST",
+    "path": "/api/v1/orders/ORD-2026-1109-0008/transitions",
+    "params": null,
+    "headers": {},
+    "request": {
+      "to": "en_preparacion"
+    },
+    "status": 200,
+    "response": {
+      "id": "ORD-2026-1109-0008",
+      "status": "en_preparacion",
+      "updatedAt": "2026-11-09T03:47:06.494Z"
+    }
+  },
+  {
+    "id": "S24",
+    "method": "GET",
+    "path": "/api/v1/reports/sales",
+    "params": {
+      "from": "2026-11-09",
+      "to": "2026-11-09",
+      "size": "2"
+    },
+    "headers": {},
+    "request": null,
+    "status": 200,
+    "response": {
+      "period": {
+        "from": "2026-11-09",
+        "to": "2026-11-09"
+      },
+      "kpis": {
+        "orders": 3,
+        "revenue": 21250,
+        "averageTicket": 7083,
+        "cancelled": 4
+      },
+      "byProduct": [
+        {
+          "productId": "p-0001",
+          "name": "Empanada de pino",
+          "units": 4,
+          "revenue": 10000
+        },
+        {
+          "productId": "p-0004",
+          "name": "Empanada de carne",
+          "units": 3,
+          "revenue": 9450
+        }
+      ],
+      "orders": [
+        {
+          "id": "ORD-2026-1109-0009",
+          "createdAt": "2026-11-09T03:47:06.537Z",
+          "clientName": "Ana Pérez Soto",
+          "status": "anulado",
+          "total": 5610
+        },
+        {
+          "id": "ORD-2026-1109-0008",
+          "createdAt": "2026-11-09T03:46:52.781Z",
+          "clientName": "Ana Pérez Soto",
+          "status": "en_preparacion",
+          "total": 8150
+        }
+      ],
+      "page": 1,
+      "size": 2,
+      "total": 9
+    }
+  },
+  {
+    "id": "S25",
+    "method": "GET",
+    "path": "/api/v1/admin/promotions",
+    "params": {
+      "q": "pollo"
+    },
+    "headers": {},
+    "request": null,
+    "status": 200,
+    "response": {
+      "items": [
+        {
+          "id": "pr-3c0402048b",
+          "name": "Martes de pollo",
+          "description": "Descuento para clientes registrados.",
+          "productId": "p-976feb7139",
+          "productName": "Empanada de pollo 2151",
+          "discountPercent": 20,
+          "audience": "registrados",
+          "startsAt": "2026-11-09",
+          "endsAt": "2026-11-16",
+          "active": true
+        }
+      ]
+    }
+  },
+  {
+    "id": "S26",
+    "method": "POST",
+    "path": "/api/v1/admin/promotions",
+    "params": null,
+    "headers": {},
+    "request": {
+      "name": "Martes de pollo",
+      "description": "Descuento para clientes registrados.",
+      "productId": "p-976feb7139",
+      "discountPercent": 20,
+      "audience": "registrados",
+      "startsAt": "2026-11-09",
+      "endsAt": "2026-11-16"
+    },
+    "status": 201,
+    "response": {
+      "id": "pr-3c0402048b",
+      "active": true
+    }
+  },
+  {
+    "id": "S27",
+    "method": "PUT",
+    "path": "/api/v1/admin/promotions/pr-3c0402048b/active",
+    "params": null,
+    "headers": {},
+    "request": {
+      "active": false
+    },
+    "status": 200,
+    "response": {
+      "id": "pr-3c0402048b",
+      "active": false
+    }
+  },
+  {
+    "id": "S28",
+    "method": "DELETE",
+    "path": "/api/v1/admin/promotions/pr-3c0402048b",
+    "params": null,
+    "headers": {},
+    "request": null,
+    "status": 204,
+    "response": null
+  },
+  {
+    "id": "S29",
+    "method": "POST",
+    "path": "/api/v1/auth/password",
+    "params": null,
+    "headers": {},
+    "request": {
+      "currentPassword": "Cliente#2026ok",
+      "newPassword": "NuevaClave#2026"
+    },
+    "status": 204,
+    "response": null
+  },
+  {
+    "id": "S30",
+    "method": "PUT",
+    "path": "/api/v1/admin/products/p-976feb7139",
+    "params": null,
+    "headers": {},
+    "request": {
+      "name": "Empanada de pollo 2151",
+      "category": "horno",
+      "price": 2700,
+      "description": "Pollo, pimentón, cebolla y aceituna."
+    },
+    "status": 200,
+    "response": {
+      "id": "p-976feb7139",
+      "name": "Empanada de pollo 2151",
+      "category": "horno",
+      "price": 2700,
+      "description": "Pollo, pimentón, cebolla y aceituna.",
+      "available": true,
+      "updatedAt": "2026-11-09T03:47:06Z"
+    }
+  },
+  {
+    "id": "S31",
+    "method": "PUT",
+    "path": "/api/v1/users/62f90491-37e2-4586-80d8-1899c4e1e9a6",
+    "params": null,
+    "headers": {},
+    "request": {
+      "name": "Rosa Tapia",
+      "role": "cajero",
+      "active": true
+    },
+    "status": 200,
+    "response": {
+      "id": "62f90491-37e2-4586-80d8-1899c4e1e9a6",
+      "name": "Rosa Tapia",
+      "email": "rosa-f10a89@lachilena.cl",
+      "role": "cajero",
+      "active": true
+    }
+  },
+  {
+    "id": "S32",
+    "method": "GET",
+    "path": "/api/v1/clients/c47432c5-3177-4b44-a770-13103e5121a9",
+    "params": null,
+    "headers": {},
+    "request": null,
+    "status": 200,
+    "response": {
+      "id": "c47432c5-3177-4b44-a770-13103e5121a9",
+      "run": "17.041.365-2",
+      "name": "Ana Pérez Soto",
+      "email": "ana.perez-789bcd@example.cl",
+      "address": "Av. Pajaritos 1200",
+      "comuna": "Maipú",
+      "provincia": "Santiago",
+      "region": "Metropolitana",
+      "phone": "+56987654321"
+    }
+  },
+  {
+    "id": "S33",
+    "method": "PUT",
+    "path": "/api/v1/clients/c47432c5-3177-4b44-a770-13103e5121a9",
+    "params": null,
+    "headers": {},
+    "request": {
+      "name": "Ana Pérez Soto",
+      "address": "Av. 5 de Abril 450",
+      "comuna": "Maipú",
+      "provincia": "Santiago",
+      "region": "Metropolitana",
+      "phone": "+56987654321"
+    },
+    "status": 200,
+    "response": {
+      "id": "c47432c5-3177-4b44-a770-13103e5121a9",
+      "run": "17.041.365-2",
+      "name": "Ana Pérez Soto",
+      "email": "ana.perez-789bcd@example.cl",
+      "address": "Av. 5 de Abril 450",
+      "comuna": "Maipú",
+      "provincia": "Santiago",
+      "region": "Metropolitana",
+      "phone": "+56987654321"
+    }
+  },
+  {
+    "id": "GQL",
+    "method": "POST",
+    "path": "/api/v1/graphql",
+    "params": null,
+    "headers": {},
+    "request": {
+      "operationName": "Resumen",
+      "query": "query Resumen($id: ID!) { resumenPedido(orderId: $id) { pedido { id estado total items { nombre cantidad precioUnitario producto { descripcion disponible } } } medioPago pago { estado boletaDisponible } historial { estado en } direccionEntrega } }",
+      "variables": {
+        "id": "ORD-2026-1109-0008"
+      }
+    },
+    "status": 200,
+    "response": {
+      "data": {
+        "resumenPedido": {
+          "pedido": {
+            "id": "ORD-2026-1109-0008",
+            "estado": "PENDIENTE_PAGO",
+            "total": 8150,
+            "items": [
+              {
+                "nombre": "Empanada de pino",
+                "cantidad": 2,
+                "precioUnitario": 2500,
+                "producto": {
+                  "descripcion": "Carne molida, cebolla, huevo duro, aceituna y pasas. La clásica chilena.",
+                  "disponible": true
+                }
+              },
+              {
+                "nombre": "Empanada de carne",
+                "cantidad": 1,
+                "precioUnitario": 3150,
+                "producto": {
+                  "descripcion": "Rellena con carne molida, cebolla y ajo, frita al momento.",
+                  "disponible": true
+                }
+              }
+            ]
+          },
+          "medioPago": "DEPOSITO",
+          "pago": {
+            "estado": "PENDIENTE",
+            "boletaDisponible": false
+          },
+          "historial": [
+            {
+              "estado": "PENDIENTE_PAGO",
+              "en": "2026-11-09T03:46:52.781Z"
+            }
+          ],
+          "direccionEntrega": "Av. 5 de Abril 450, Maipú"
+        }
+      }
+    }
+  }
+]

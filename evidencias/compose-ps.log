@@ -1,0 +1,16 @@
+﻿SERVICE         STATUS
+auth            Up 22 seconds (healthy)
+certs           Exited (0) 30 seconds ago
+clients         Up 11 seconds (healthy)
+gateway         Up 11 seconds (healthy)
+graphql         Up 21 seconds (healthy)
+inventory       Up 21 seconds (healthy)
+mailcheck-sim   Up 22 seconds (healthy)
+mailpit         Up 31 seconds (healthy)
+mongo           Up 32 seconds (healthy)
+notifications   Up 22 seconds (healthy)
+orders          Up 21 seconds (healthy)
+payments        Up 22 seconds (healthy)
+servipag-sim    Up 21 seconds (healthy)
+vault           Up 30 seconds (healthy)
+vault-init      Exited (0) 22 seconds ago

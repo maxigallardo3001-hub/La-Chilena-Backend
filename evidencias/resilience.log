@@ -1,0 +1,36 @@
+﻿== Fase bordes
+PASS R01 cabeceras de seguridad: nosniff, DENY, HSTS, no-store y no-referrer
+PASS R02 TLS 1.2 o superior, verificado con la CA interna en modo estricto
+PASS R03 inyección NoSQL en el ingreso: 400 y sin cookie de sesión
+PASS R04 clave incorrecta: 401 con mensaje genérico
+PASS R05 cabeceras de identidad interna enviadas desde afuera: se ignoran (401)
+PASS R06 cookie de sesión inventada: 401
+PASS R07 POST desde un origen no permitido: 403 ORIGIN_NOT_ALLOWED
+PASS R08 cuerpo que no es JSON: 400
+PASS R09 cuerpo sobre el máximo de la ruta: 413
+PASS R10 verbo no declarado en la lista de rutas (DELETE /products): 404
+PASS R11 rutas internas no se publican por el gateway: 404
+PASS R12 introspección GraphQL deshabilitada
+PASS R13 cantidad 0: 400 VALIDATION_ERROR
+PASS R14 medio de pago inexistente: 400
+PASS R15 consulta de más de 2 KB: 400
+PASS R16 filtro inválido en el catálogo: 400
+== Fase sin-inventory
+PASS R17 inventory detenido: el catálogo responde 502 BAD_GATEWAY sin detalles internos
+PASS R18 inventory detenido: GraphQL entrega pedido y pago, con producto en null y error parcial
+== Fase sin-payments
+PASS R19 payments detenido: la boleta responde 502 sin detalles internos
+PASS R20 payments detenido: crear un pedido falla de forma controlada (502/503)
+PASS R21 el pedido que no pudo registrar su cobro no queda a medias
+== Fase sin-auth
+PASS R22 auth detenido: el catálogo público sigue respondiendo
+PASS R23 auth detenido: las rutas con sesión responden 503 AUTH_UNAVAILABLE y no abren el acceso
+== Fase recuperado
+PASS R24 inventory, payments y auth vuelven a operar sin intervención manual
+PASS R25 tras la recuperación se puede volver a crear un pedido
+== Fase antes-reinicio
+PASS R26 pedido creado antes de reiniciar el sistema
+== Fase tras-reinicio
+PASS R27 tras docker compose down y up (sin -v) el sistema vuelve a responder
+PASS R28 el pedido creado antes del reinicio sigue en MongoDB
+PASS R29 la misma Idempotency-Key después del reinicio devuelve el pedido original sin duplicarlo
